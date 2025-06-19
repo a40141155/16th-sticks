@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>16分音符手法練習</title>
+  <title>16分音符手法練習 V2</title>
   <style>
     :root{
       --clr-bg:#fafafa;
@@ -15,47 +15,61 @@
     }
     *{box-sizing:border-box;font-family:"Segoe UI",sans-serif}
     body{margin:0;padding:1.2rem;background:var(--clr-bg);display:flex;flex-direction:column;align-items:center;gap:1.4rem;color:#222}
-    h1{margin:0;font-size:1.55rem}
-
+    h1{margin:0;font-size:1.6rem}
     /* controls */
     .controls{width:100%;max-width:840px;display:flex;align-items:center;gap:.8rem}
     .controls label{display:flex;align-items:center;gap:.6rem;font-weight:600}
     .controls input{width:6rem;padding:.35rem .4rem;font-size:1rem;border:1px solid var(--clr-border);border-radius:.35rem}
     button{cursor:pointer;padding:.45rem 1.1rem;border:none;border-radius:.45rem;font-weight:600;background:var(--clr-primary);color:#fff;transition:background .2s}
     button:hover{background:#004ecc}
+    button.active{background:#004ecc}
     #btnNext{margin-left:auto}
-
     /* elapsed */
     #elapsedWrap{font-size:1.35rem;font-weight:700;color:#444}
-
     /* practice area */
     #practiceArea{display:flex;flex-direction:column;gap:.25rem;width:100%;max-width:840px}
     #countsBar,#patternBar{display:flex;gap:.35rem}
     .group{display:flex;gap:.35rem;padding:.35rem;border:2px solid var(--clr-border);border-radius:.5rem}
     #countsBar .group{border:2px solid transparent}
-
     .note,.count{width:2.6rem;height:2.6rem;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.4rem;border-radius:.35rem}
     .count{font-size:1.2rem;color:#555;background:transparent}
     .note.R{background:var(--clr-note-r);color:#fff;text-transform:uppercase}
     .note.L{background:var(--clr-note-l);color:#fff;text-transform:uppercase}
     .note.highlight{background:var(--clr-highlight);color:#000}
-
     /* log */
-    #sessionInfo{width:100%;max-width:840px;font-weight:600;font-size:1rem;color:#444}
     #logWrap{width:100%;max-width:840px}
     #logWrap h3{margin:.6rem 0 .3rem;font-size:1.1rem}
     #log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.25rem;max-height:240px;overflow-y:auto}
-
-    /* V2 record visualization */
-    #log li{display:flex;align-items:center;justify-content:space-between;padding:.35rem .5rem;border:1px solid var(--clr-border);border-radius:.4rem;background:#fff;font-size:.95rem}
-    .logLeft{display:flex;align-items:center;gap:.6rem}
-    .logLeft .index{font-weight:600;width:1.5rem;text-align:center}
-    .logLeft .logPattern{display:flex;gap:.35rem}
-    .logLeft .logPattern .group{display:flex;gap:.2rem;padding:.2rem;border:1px solid var(--clr-border);border-radius:.35rem}
-    .logLeft .logPattern .note{width:1.6rem;height:1.6rem;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;border-radius:.25rem}
-    .logLeft .logPattern .R{background:var(--clr-note-r);color:#fff}
-    .logLeft .logPattern .L{background:var(--clr-note-l);color:#fff}
-    .logRight{display:flex;align-items:center;gap:1rem}
+    .logItem{display:flex;justify-content:space-between;align-items:center;padding:.35rem .5rem;border:1px solid var(--clr-border);border-radius:.4rem;background:#fff;font-size:.95rem}
+    .logLeft{display:flex;align-items:center;gap:.5rem;flex:1}
+    .logSeq{font-weight:600;width:1.5rem;text-align:center;color:#444}
+    .logPattern{display:flex;gap:.2rem}
+    .logPattern .note{width:1.6rem;height:1.6rem;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;border-radius:.25rem}
+    .logPattern .R{background:var(--clr-note-r);color:#fff}
+    .logPattern .L{background:var(--clr-note-l);color:#fff}
+    .logRight{display:flex;gap:1rem;min-width:8rem;justify-content:flex-end}
+    .logRight span{white-space:nowrap;color:#444;font-size:.95rem}
+    /* responsive for smaller viewports */
+    @media(max-width:830px){
+      .note,.count{width:2.2rem;height:2.2rem;font-size:1rem}
+      .logPattern .note{width:1.4rem;height:1.4rem;font-size:.85rem}
+    }
+    /* iPhone XS landscape responsiveness */
+    @media(max-width:812px){
+      body{padding:0.6rem;gap:1rem}
+      h1{font-size:1.4rem}
+      .controls{flex-wrap:wrap;gap:.6rem}
+      .controls input{width:5rem;font-size:0.9rem}
+      button{padding:0.35rem 0.8rem;font-size:0.9rem}
+      #elapsedWrap{font-size:1.2rem}
+      .note,.count{width:2rem;height:2rem;font-size:1rem}
+      .group{gap:0.25rem;padding:0.25rem}
+      #practiceArea{gap:0.2rem}
+      #countsBar,#patternBar{gap:0.25rem}
+      .logPattern .note{width:1.2rem;height:1.2rem;font-size:.8rem}
+      .logItem{padding:.3rem .4rem;font-size:.9rem}
+      .logRight{gap:.8rem;min-width:6rem}
+    }
   </style>
 </head>
 <body>
@@ -64,6 +78,8 @@
     <label>BPM：<input type="number" id="bpmInput" min="40" max="240" value="90"></label>
     <button id="btnStart">Start</button>
     <button id="btnStop">Stop</button>
+    <button id="btn16" class="active">16th</button>
+    <button id="btn8">8th</button>
     <button id="btnNext">Next</button>
   </div>
   <div id="elapsedWrap">練習時間：<span id="elapsed">00:00</span></div>
@@ -77,27 +93,134 @@
     <ul id="log"></ul>
   </div>
 <script>
-(()=>{
-  const $=id=>document.getElementById(id);
-  const bpmInput=$('bpmInput'),btnStart=$('btnStart'),btnStop=$('btnStop'),btnNext=$('btnNext');
-  const countsBar=$('countsBar'),patternBar=$('patternBar'),elapsedEl=$('elapsed'),sessionInfo=$('sessionInfo'),logUl=$('log');
-  let pattern=[],highlightIdx=0,metroTimer=null,elapsedTimer=null,startTime=0,indexCount=0,audioCtx;
-  const pad=n=>String(n).padStart(2,'0');
-  const fmt=t=>{const s=Math.floor(t/1000);return `${pad((s/60)|0)}:${pad(s%60)}`};
-  function genPattern(){const seq=[];while(seq.length<16){const next=Math.random()<
-0.5?'R':'L';const len=seq.length,p1=seq[len-1],p2=seq[len-2],w14=seq[14],w15=seq[15];if((p1===next&&p2===next)||(len===14&&p1===next&&w15===next)||(len===15&&p1===
-next&&w14===next))continue;seq.push(next);}pattern=seq;renderPattern();highlightIdx=0;clearHL();}
-  function renderCounts(){countsBar.innerHTML='';const labels=['1','e','n','a','2','e','n','a','3','e','n','a','4','e','n','a'];for(let g=0;g<4;g++){const grp=document.createElement('div');grp.className='group';for
-(let i=0;i<4;i++){const c=document.createElement('div');c.className='count';c.textContent=labels[g*4+i];grp.appendChild(c);}countsBar.appendChild(grp);}}
-  function renderPattern(){patternBar.innerHTML='';for(let g=0;g<4;g++){const grp=document.createElement('div');grp.className='group';for(let i=0;i<4;i++){const idx=g*4+i,n=document.createElement('div');n.className=`note ${pattern[idx]}`;n.textContent=pattern[idx];grp.appendChild(n);}patternBar.appendChild(grp);}}
-  function clearHL(){document.querySelectorAll('.note.highlight').forEach(el=>el.classList.remove('highlight'))}
-  function click(strong){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type='square';osc.frequency.value=strong?1500:950;gain.gain.value=.25;osc.connect(gain);gain.connect(audioCtx.destination);osc.start();osc.stop(audioCtx.currentTime+.05);}
-  function step(){clearHL();const notes=document.querySelectorAll('#patternBar .note');notes[highlightIdx].classList.add('highlight');click(highlightIdx%4===0);highlightIdx=(highlightIdx+1)%16;}
-  function start(){stop();const bpm=parseInt(bpmInput.value)||90;sessionInfo.textContent=`當前 BPM：${bpm}`;const interval=60000/(bpm*4);step();metroTimer=setInterval(step,interval);startTime=Date.now();elapsedTimer=setInterval(()=>elapsedEl.textContent=fmt(Date.now()-startTime),500);}
-  function stop(){if(metroTimer){clearInterval(metroTimer);metroTimer=null;}if(elapsedTimer){clearInterval(elapsedTimer);elapsedTimer=null;}clearHL();if(startTime){const dur=Date.now()-startTime;logPractice(dur,parseInt(bpmInput.value)||90);startTime=0;elapsedEl.textContent='00:00';}}
-  function logPractice(ms,bpm){indexCount++;const li=document.createElement('li');const left=document.createElement('div');left.className='logLeft';const idxSpan=document.createElement('span');idxSpan.className='index';idxSpan.textContent=indexCount;left.appendChild(idxSpan);const visual=document.createElement('div');visual.className='logPattern';for(let g=0;g<4;g++){const grp=document.createElement('div');grp.className='group';for(let i=0;i<4;i++){const idx=g*4+i;const note=document.createElement('div');note.className=`note ${pattern[idx]}`;note.textContent=pattern[idx];grp.appendChild(note);}visual.appendChild(grp);}left.appendChild(visual);const right=document.createElement('div');right.className='logRight';const timeSpan=document.createElement('span');timeSpan.textContent=fmt(ms);const bpmSpan=document.createElement('span');bpmSpan.textContent=bpm;right.appendChild(timeSpan);right.appendChild(bpmSpan);li.appendChild(left);li.appendChild(right);logUl.prepend(li);}
-  btnStart.addEventListener('click',start);btnStop.addEventListener('click',stop);btnNext.addEventListener('click',genPattern);
-  renderCounts();genPattern();
+(() => {
+  const $ = id => document.getElementById(id);
+  const bpmInput = $('bpmInput'), btnStart = $('btnStart'), btnStop = $('btnStop'), btn16 = $('btn16'), btn8 = $('btn8'), btnNext = $('btnNext');
+  const countsBar = $('countsBar'), patternBar = $('patternBar'), elapsedEl = $('elapsed'), sessionInfo = $('sessionInfo'), logUl = $('log');
+
+  let pattern = [], highlightIdx = 0, metroTimer = null, elapsedTimer = null, startTime = 0, indexCount = 0, audioCtx, soundMod = 1;
+
+  const pad = n => String(n).padStart(2, '0');
+  const fmt = t => { const s = Math.floor(t / 1000); return `${pad((s/60)|0)}:${pad(s%60)}`; };
+
+  function genPattern() {
+    const seq = [];
+    while (seq.length < 16) {
+      const next = Math.random()<.5?'R':'L';
+      const len = seq.length;
+      const p1 = seq[len-1], p2 = seq[len-2];
+      const w14 = seq[14], w15 = seq[15];
+      if ((p1===next&&p2===next) ||
+          (len===14&&p1===next&&w15===next) ||
+          (len===15&&p1===next&&w14===next)) continue;
+      seq.push(next);
+    }
+    pattern = seq;
+    highlightIdx = 0;
+    clearHL();
+    renderPattern();
+  }
+
+  function renderCounts() {
+    countsBar.innerHTML = '';
+    const labels = ['1','e','n','a','2','e','n','a','3','e','n','a','4','e','n','a'];
+    for (let g=0; g<4; g++) {
+      const grp = document.createElement('div'); grp.className='group';
+      for (let i=0; i<4; i++) {
+        const c = document.createElement('div'); c.className='count'; c.textContent=labels[g*4+i];
+        grp.appendChild(c);
+      }
+      countsBar.appendChild(grp);
+    }
+  }
+
+  function renderPattern() {
+    patternBar.innerHTML = '';
+    for (let g=0; g<4; g++) {
+      const grp = document.createElement('div'); grp.className='group';
+      for (let i=0; i<4; i++) {
+        const idx = g*4+i;
+        const n = document.createElement('div'); n.className = `note ${pattern[idx]}`; n.textContent = pattern[idx];
+        grp.appendChild(n);
+      }
+      patternBar.appendChild(grp);
+    }
+  }
+
+  function clearHL() {
+    document.querySelectorAll('.note.highlight').forEach(el=>el.classList.remove('highlight'));
+  }
+
+  function click(strong) {
+    if (!audioCtx) audioCtx = new(window.AudioContext||window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+    osc.type='square'; osc.frequency.value = strong?1500:950; gain.gain.value = .25;
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + .05);
+  }
+
+  function step() {
+    clearHL();
+    const notes = document.querySelectorAll('#patternBar .note');
+    notes[highlightIdx].classList.add('highlight');
+    if (highlightIdx % soundMod === 0) click(highlightIdx%4===0);
+    highlightIdx = (highlightIdx + 1) % 16;
+  }
+
+  function start() {
+    stop();
+    const bpm = parseInt(bpmInput.value) || 90;
+    sessionInfo.textContent = `當前 BPM：${bpm}`;
+    const interval = 60000/(bpm*4);
+    step();
+    metroTimer = setInterval(step, interval);
+    startTime = Date.now(); elapsedEl.textContent='00:00';
+    elapsedTimer = setInterval(()=>elapsedEl.textContent = fmt(Date.now()-startTime), 500);
+  }
+
+  function stop() {
+    if (metroTimer) { clearInterval(metroTimer); metroTimer=null; }
+    if (elapsedTimer) { clearInterval(elapsedTimer); elapsedTimer=null; }
+    clearHL();
+    if (startTime) {
+      const dur = Date.now() - startTime;
+      logPractice(dur, parseInt(bpmInput.value)||90);
+      startTime = 0; elapsedEl.textContent='00:00';
+    }
+  }
+
+  function switchMode(mode) {
+    soundMod = mode;
+    btn16.classList.toggle('active', mode===1);
+    btn8.classList.toggle('active', mode===2);
+  }
+
+  function logPractice(ms,bpm) {
+    indexCount++;
+    const li = document.createElement('li'); li.className='logItem';
+    const left = document.createElement('div'); left.className='logLeft';
+    const seq = document.createElement('span'); seq.className='logSeq'; seq.textContent=indexCount; left.appendChild(seq);
+    const patDiv = document.createElement('div'); patDiv.className='logPattern';
+    pattern.forEach((h,i) => {
+      if (i%4===0) { const bar=document.createElement('span'); bar.textContent='|'; patDiv.appendChild(bar); }
+      const note=document.createElement('span'); note.className=`note ${h}`; note.textContent=h; patDiv.appendChild(note);
+    });
+    left.appendChild(patDiv);
+    const right = document.createElement('div'); right.className='logRight';
+    const tSpan = document.createElement('span'); tSpan.textContent = fmt(ms);
+    const bSpan = document.createElement('span'); bSpan.textContent = bpm;
+    right.appendChild(tSpan); right.appendChild(bSpan);
+    li.appendChild(left); li.appendChild(right);
+    logUl.prepend(li);
+  }
+
+  btnStart.addEventListener('click', start);
+  btnStop.addEventListener('click', stop);
+  btn16.addEventListener('click', ()=>switchMode(1));
+  btn8.addEventListener('click', ()=>switchMode(2));
+  btnNext.addEventListener('click', genPattern);
+
+  renderCounts(); genPattern(); switchMode(1);
 })();
 </script>
 </body>
